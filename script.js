@@ -1,6 +1,8 @@
 /* =====================================================
    GOOGLE APPS SCRIPT URL
-   GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT KAMU
+
+   Setelah membuat Google Apps Script,
+   masukkan URL Web App di bawah ini.
 ===================================================== */
 
 const API_URL =
@@ -20,35 +22,20 @@ const gameScreen =
 const finishScreen =
     document.getElementById("finishScreen");
 
-const leaderboardScreen =
-    document.getElementById("leaderboardScreen");
-
 const usernameInput =
     document.getElementById("username");
 
-const whatsappInput =
-    document.getElementById("whatsapp");
+const phoneInput =
+    document.getElementById("phone");
 
 const startBtn =
     document.getElementById("startBtn");
 
-const leaderboardBtn =
-    document.getElementById("leaderboardBtn");
+const refreshBtn =
+    document.getElementById("refreshBtn");
 
-const backBtn =
-    document.getElementById("backBtn");
-
-const againBtn =
-    document.getElementById("againBtn");
-
-const finishLeaderboardBtn =
-    document.getElementById("finishLeaderboardBtn");
-
-const leaderboardBackBtn =
-    document.getElementById("leaderboardBackBtn");
-
-const refreshLeaderboard =
-    document.getElementById("refreshLeaderboard");
+const leaderboardList =
+    document.getElementById("leaderboardList");
 
 const canvas =
     document.getElementById("mazeCanvas");
@@ -56,13 +43,37 @@ const canvas =
 const ctx =
     canvas.getContext("2d");
 
+const playerName =
+    document.getElementById("playerName");
+
+const timerElement =
+    document.getElementById("timer");
+
+const movesElement =
+    document.getElementById("moves");
+
+const finalTime =
+    document.getElementById("finalTime");
+
+const finalMoves =
+    document.getElementById("finalMoves");
+
+const finalScore =
+    document.getElementById("finalScore");
+
+const finishPlayer =
+    document.getElementById("finishPlayer");
+
+const saveStatus =
+    document.getElementById("saveStatus");
+
 
 /* =====================================================
-   GAME VARIABLE
+   GAME DATA
 ===================================================== */
 
 let username = "";
-let whatsapp = "";
+let phone = "";
 
 let maze = [];
 let player = {
@@ -70,17 +81,12 @@ let player = {
     y: 0
 };
 
-let finish = {
+let exit = {
     x: 0,
     y: 0
 };
 
-let coins = [];
-
-let steps = 0;
-let coinCount = 0;
-
-let level = 1;
+let moves = 0;
 
 let startTime = 0;
 let timerInterval = null;
@@ -88,13 +94,13 @@ let timerInterval = null;
 let gameRunning = false;
 
 
-/* =====================================================
-   MAZE SETTING
-===================================================== */
+/*
+   Ukuran labirin.
+   21 x 21 cukup sulit tetapi masih nyaman
+   untuk layar HP.
+*/
 
-const SIZE = 17;
-
-let cellSize;
+const SIZE = 21;
 
 
 /* =====================================================
@@ -104,7 +110,9 @@ let cellSize;
 function showScreen(screen) {
 
     document.querySelectorAll(".screen")
-        .forEach(s => s.classList.remove("active"));
+        .forEach(el => {
+            el.classList.remove("active");
+        });
 
     screen.classList.add("active");
 }
@@ -114,48 +122,513 @@ function showScreen(screen) {
    START GAME
 ===================================================== */
 
-startBtn.addEventListener("click", function () {
-    const name = usernameInput.value.trim();
-    const wa = whatsappInput.value.trim();
+startBtn.addEventListener("click", () => {
 
-    if (name === "") {
-        alert("Masukkan username terlebih dahulu!");
+    username =
+        usernameInput.value.trim();
+
+    phone =
+        phoneInput.value.trim();
+
+
+    if (username.length < 3) {
+
+        alert("Username minimal 3 karakter.");
+
         usernameInput.focus();
+
         return;
     }
 
-    if (name.length < 3) {
-        alert("Username minimal 3 karakter!");
-        usernameInput.focus();
+
+    if (!/^[0-9+ ]{10,15}$/.test(phone)) {
+
+        alert("Masukkan nomor WhatsApp yang valid.");
+
+        phoneInput.focus();
+
         return;
     }
 
-    if (wa === "") {
-        alert("Masukkan nomor WhatsApp terlebih dahulu!");
-        whatsappInput.focus();
-        return;
-    }
 
-    if (!/^[0-9]+$/.test(wa)) {
-        alert("Nomor WhatsApp hanya boleh berisi angka!");
-        whatsappInput.focus();
-        return;
-    }
+    playerName.textContent =
+        username.toUpperCase();
 
-    if (wa.length < 10) {
-        alert("Nomor WhatsApp minimal 10 angka!");
-        whatsappInput.focus();
-        return;
-    }
 
-    username = name;
-    whatsapp = wa;
+    startGame();
+});
 
-    document.getElementById("playerName").textContent = username;
+
+/* =====================================================
+   START
+===================================================== */
+
+function startGame() {
 
     showScreen(gameScreen);
 
-    startGame();
+    moves = 0;
+
+    movesElement.textContent = "0";
+
+    timerElement.textContent = "00:00";
+
+    generateMaze();
+
+    resizeCanvas();
+
+    drawMaze();
+
+    startTimer();
+
+    gameRunning = true;
+}
+
+
+/* =====================================================
+   MAZE GENERATOR
+   Recursive Backtracking
+===================================================== */
+
+function generateMaze() {
+
+    maze = [];
+
+    for (let y = 0; y < SIZE; y++) {
+
+        maze[y] = [];
+
+        for (let x = 0; x < SIZE; x++) {
+
+            maze[y][x] = 1;
+
+        }
+    }
+
+
+    /*
+       Mulai dari (1,1)
+    */
+
+    const stack = [];
+
+    maze[1][1] = 0;
+
+    stack.push({
+        x: 1,
+        y: 1
+    });
+
+
+    const directions = [
+        { x: 0, y: -2 },
+        { x: 2, y: 0 },
+        { x: 0, y: 2 },
+        { x: -2, y: 0 }
+    ];
+
+
+    while (stack.length > 0) {
+
+        const current =
+            stack[stack.length - 1];
+
+        let neighbors = [];
+
+
+        directions.forEach(dir => {
+
+            const nx =
+                current.x + dir.x;
+
+            const ny =
+                current.y + dir.y;
+
+
+            if (
+                nx > 0 &&
+                nx < SIZE - 1 &&
+                ny > 0 &&
+                ny < SIZE - 1 &&
+                maze[ny][nx] === 1
+            ) {
+
+                neighbors.push({
+                    x: nx,
+                    y: ny,
+                    wallX:
+                        current.x + dir.x / 2,
+                    wallY:
+                        current.y + dir.y / 2
+                });
+
+            }
+
+        });
+
+
+        if (neighbors.length > 0) {
+
+            const next =
+                neighbors[
+                    Math.floor(
+                        Math.random() *
+                        neighbors.length
+                    )
+                ];
+
+
+            maze[next.y][next.x] = 0;
+
+            maze[next.wallY][next.wallX] = 0;
+
+            stack.push({
+                x: next.x,
+                y: next.y
+            });
+
+        } else {
+
+            stack.pop();
+
+        }
+
+    }
+
+
+    player = {
+        x: 1,
+        y: 1
+    };
+
+
+    exit = {
+        x: SIZE - 2,
+        y: SIZE - 2
+    };
+
+
+    maze[exit.y][exit.x] = 0;
+
+
+    /*
+       Pastikan jalan keluar terbuka.
+    */
+
+    maze[SIZE - 2][SIZE - 3] = 0;
+}
+
+
+/* =====================================================
+   CANVAS
+===================================================== */
+
+function resizeCanvas() {
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+    const size =
+        Math.min(
+            rect.width,
+            rect.height
+        );
+
+
+    canvas.width = size * devicePixelRatio;
+
+    canvas.height = size * devicePixelRatio;
+
+    ctx.setTransform(
+        devicePixelRatio,
+        0,
+        0,
+        devicePixelRatio,
+        0,
+        0
+    );
+}
+
+
+/* =====================================================
+   DRAW MAZE
+===================================================== */
+
+function drawMaze() {
+
+    const size =
+        canvas.getBoundingClientRect().width;
+
+    const cell =
+        size / SIZE;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        size,
+        size
+    );
+
+
+    /*
+       Background
+    */
+
+    ctx.fillStyle =
+        "#020617";
+
+    ctx.fillRect(
+        0,
+        0,
+        size,
+        size
+    );
+
+
+    /*
+       Dinding
+    */
+
+    for (let y = 0; y < SIZE; y++) {
+
+        for (let x = 0; x < SIZE; x++) {
+
+            if (maze[y][x] === 1) {
+
+                ctx.fillStyle =
+                    "#1e3a8a";
+
+                ctx.fillRect(
+                    x * cell,
+                    y * cell,
+                    cell + 1,
+                    cell + 1
+                );
+
+            }
+
+        }
+
+    }
+
+
+    /*
+       Exit
+    */
+
+    ctx.fillStyle =
+        "#22c55e";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        exit.x * cell + cell / 2,
+        exit.y * cell + cell / 2,
+        cell * .3,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /*
+       Player
+    */
+
+    ctx.fillStyle =
+        "#38bdf8";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        player.x * cell + cell / 2,
+        player.y * cell + cell / 2,
+        cell * .32,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /*
+       Player highlight
+    */
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        player.x * cell + cell * .4,
+        player.y * cell + cell * .4,
+        cell * .08,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+}
+
+
+/* =====================================================
+   MOVE PLAYER
+===================================================== */
+
+function movePlayer(dx, dy) {
+
+    if (!gameRunning) return;
+
+
+    const nx =
+        player.x + dx;
+
+    const ny =
+        player.y + dy;
+
+
+    /*
+       Tidak boleh menembus dinding.
+    */
+
+    if (
+        nx < 0 ||
+        nx >= SIZE ||
+        ny < 0 ||
+        ny >= SIZE
+    ) return;
+
+
+    if (maze[ny][nx] === 1) {
+
+        /*
+           Efek getar ringan jika tersedia.
+        */
+
+        if (navigator.vibrate) {
+            navigator.vibrate(15);
+        }
+
+        return;
+    }
+
+
+    player.x = nx;
+
+    player.y = ny;
+
+    moves++;
+
+    movesElement.textContent =
+        moves;
+
+
+    drawMaze();
+
+
+    /*
+       Check finish
+    */
+
+    if (
+        player.x === exit.x &&
+        player.y === exit.y
+    ) {
+
+        finishGame();
+
+    }
+}
+
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (!gameRunning) return;
+
+
+        switch (event.key) {
+
+            case "ArrowUp":
+            case "w":
+            case "W":
+
+                movePlayer(0, -1);
+
+                break;
+
+
+            case "ArrowDown":
+            case "s":
+            case "S":
+
+                movePlayer(0, 1);
+
+                break;
+
+
+            case "ArrowLeft":
+            case "a":
+            case "A":
+
+                movePlayer(-1, 0);
+
+                break;
+
+
+            case "ArrowRight":
+            case "d":
+            case "D":
+
+                movePlayer(1, 0);
+
+                break;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   MOBILE CONTROL
+===================================================== */
+
+document.querySelectorAll(
+    ".control[data-direction]"
+).forEach(button => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            const direction =
+                button.dataset.direction;
+
+
+            if (direction === "up")
+                movePlayer(0, -1);
+
+            if (direction === "down")
+                movePlayer(0, 1);
+
+            if (direction === "left")
+                movePlayer(-1, 0);
+
+            if (direction === "right")
+                movePlayer(1, 0);
+
+        }
+    );
+
 });
 
 
@@ -163,18 +636,41 @@ startBtn.addEventListener("click", function () {
    TIMER
 ===================================================== */
 
-function updateTimer() {
+function startTimer() {
 
-    if (!gameRunning) return;
+    clearInterval(timerInterval);
+
+    startTime = Date.now();
+
+
+    timerInterval =
+        setInterval(() => {
+
+            const elapsed =
+                Math.floor(
+                    (Date.now() - startTime)
+                    / 1000
+                );
+
+
+            timerElement.textContent =
+                formatTime(elapsed);
+
+        }, 1000);
+}
+
+
+function stopTimer() {
+
+    clearInterval(timerInterval);
 
     const elapsed =
         Math.floor(
-            (Date.now() - startTime) / 1000
+            (Date.now() - startTime)
+            / 1000
         );
 
-    document.getElementById(
-        "timer"
-    ).textContent = formatTime(elapsed);
+    return elapsed;
 }
 
 
@@ -190,615 +686,8 @@ function formatTime(seconds) {
             .toString()
             .padStart(2, "0");
 
+
     return `${min}:${sec}`;
-}
-
-
-/* =====================================================
-   GENERATE MAZE
-   Recursive Backtracker
-===================================================== */
-
-function generateMaze() {
-
-    maze = [];
-
-    for (let y = 0; y < SIZE; y++) {
-
-        maze[y] = [];
-
-        for (let x = 0; x < SIZE; x++) {
-
-            maze[y][x] = {
-                visited: false,
-                walls: {
-                    top: true,
-                    right: true,
-                    bottom: true,
-                    left: true
-                }
-            };
-
-        }
-    }
-
-    const stack = [];
-
-    let current = {
-        x: 0,
-        y: 0
-    };
-
-    maze[0][0].visited = true;
-
-    stack.push(current);
-
-    while (stack.length > 0) {
-
-        const neighbors =
-            getUnvisitedNeighbors(
-                current.x,
-                current.y
-            );
-
-        if (neighbors.length > 0) {
-
-            const next =
-                neighbors[
-                    Math.floor(
-                        Math.random() *
-                        neighbors.length
-                    )
-                ];
-
-            removeWall(
-                current,
-                next
-            );
-
-            next.visited = true;
-
-            stack.push(current);
-
-            current = next;
-
-        } else {
-
-            current =
-                stack.pop();
-
-        }
-    }
-
-    player = {
-        x: 0,
-        y: 0
-    };
-
-    finish = {
-        x: SIZE - 1,
-        y: SIZE - 1
-    };
-
-    generateCoins();
-}
-
-
-/* =====================================================
-   NEIGHBORS
-===================================================== */
-
-function getUnvisitedNeighbors(x, y) {
-
-    const result = [];
-
-    if (
-        y > 0 &&
-        !maze[y - 1][x].visited
-    ) {
-        result.push({
-            x: x,
-            y: y - 1
-        });
-    }
-
-    if (
-        x < SIZE - 1 &&
-        !maze[y][x + 1].visited
-    ) {
-        result.push({
-            x: x + 1,
-            y: y
-        });
-    }
-
-    if (
-        y < SIZE - 1 &&
-        !maze[y + 1][x].visited
-    ) {
-        result.push({
-            x: x,
-            y: y + 1
-        });
-    }
-
-    if (
-        x > 0 &&
-        !maze[y][x - 1].visited
-    ) {
-        result.push({
-            x: x - 1,
-            y: y
-        });
-    }
-
-    return result;
-}
-
-
-/* =====================================================
-   REMOVE WALL
-===================================================== */
-
-function removeWall(current, next) {
-
-    const dx =
-        next.x - current.x;
-
-    const dy =
-        next.y - current.y;
-
-    if (dx === 1) {
-
-        maze[current.y][current.x]
-            .walls.right = false;
-
-        maze[next.y][next.x]
-            .walls.left = false;
-    }
-
-    if (dx === -1) {
-
-        maze[current.y][current.x]
-            .walls.left = false;
-
-        maze[next.y][next.x]
-            .walls.right = false;
-    }
-
-    if (dy === 1) {
-
-        maze[current.y][current.x]
-            .walls.bottom = false;
-
-        maze[next.y][next.x]
-            .walls.top = false;
-    }
-
-    if (dy === -1) {
-
-        maze[current.y][current.x]
-            .walls.top = false;
-
-        maze[next.y][next.x]
-            .walls.bottom = false;
-    }
-}
-
-
-/* =====================================================
-   COINS
-===================================================== */
-
-function generateCoins() {
-
-    coins = [];
-
-    const amount = 8;
-
-    while (coins.length < amount) {
-
-        const x =
-            Math.floor(
-                Math.random() * SIZE
-            );
-
-        const y =
-            Math.floor(
-                Math.random() * SIZE
-            );
-
-        if (
-            (x === 0 && y === 0) ||
-            (x === SIZE - 1 &&
-             y === SIZE - 1)
-        ) {
-            continue;
-        }
-
-        const exists =
-            coins.some(
-                coin =>
-                    coin.x === x &&
-                    coin.y === y
-            );
-
-        if (!exists) {
-
-            coins.push({
-                x,
-                y
-            });
-
-        }
-    }
-}
-
-
-/* =====================================================
-   DRAW MAZE
-===================================================== */
-
-function resizeCanvas() {
-
-    const rect =
-        document
-            .getElementById("mazeContainer")
-            .getBoundingClientRect();
-
-    const size =
-        Math.floor(rect.width);
-
-    canvas.width = size;
-    canvas.height = size;
-
-    cellSize =
-        size / SIZE;
-}
-
-
-function drawMaze() {
-
-    if (!maze.length) return;
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    /* background */
-
-    ctx.fillStyle = "#080d1d";
-
-    ctx.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-
-    /* cells */
-
-    for (let y = 0; y < SIZE; y++) {
-
-        for (let x = 0; x < SIZE; x++) {
-
-            const cell =
-                maze[y][x];
-
-            const px =
-                x * cellSize;
-
-            const py =
-                y * cellSize;
-
-
-            /* visited background */
-
-            ctx.fillStyle =
-                "#0c1429";
-
-            ctx.fillRect(
-                px + 2,
-                py + 2,
-                cellSize - 4,
-                cellSize - 4
-            );
-
-
-            /* walls */
-
-            ctx.strokeStyle =
-                "#30466f";
-
-            ctx.lineWidth = 2;
-
-            ctx.beginPath();
-
-            if (cell.walls.top) {
-
-                ctx.moveTo(px, py);
-                ctx.lineTo(
-                    px + cellSize,
-                    py
-                );
-            }
-
-            if (cell.walls.right) {
-
-                ctx.moveTo(
-                    px + cellSize,
-                    py
-                );
-
-                ctx.lineTo(
-                    px + cellSize,
-                    py + cellSize
-                );
-            }
-
-            if (cell.walls.bottom) {
-
-                ctx.moveTo(
-                    px + cellSize,
-                    py + cellSize
-                );
-
-                ctx.lineTo(
-                    px,
-                    py + cellSize
-                );
-            }
-
-            if (cell.walls.left) {
-
-                ctx.moveTo(px, py);
-                ctx.lineTo(
-                    px,
-                    py + cellSize
-                );
-            }
-
-            ctx.stroke();
-        }
-    }
-
-
-    /* finish */
-
-    drawFinish();
-
-
-    /* coins */
-
-    coins.forEach(drawCoin);
-
-
-    /* player */
-
-    drawPlayer();
-}
-
-
-/* =====================================================
-   DRAW PLAYER
-===================================================== */
-
-function drawPlayer() {
-
-    const cx =
-        player.x * cellSize +
-        cellSize / 2;
-
-    const cy =
-        player.y * cellSize +
-        cellSize / 2;
-
-    ctx.beginPath();
-
-    ctx.arc(
-        cx,
-        cy,
-        cellSize * .28,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fillStyle = "#00eaff";
-
-    ctx.shadowColor = "#00eaff";
-    ctx.shadowBlur = 15;
-
-    ctx.fill();
-
-    ctx.shadowBlur = 0;
-
-    ctx.beginPath();
-
-    ctx.arc(
-        cx,
-        cy,
-        cellSize * .1,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fillStyle = "white";
-
-    ctx.fill();
-}
-
-
-/* =====================================================
-   DRAW FINISH
-===================================================== */
-
-function drawFinish() {
-
-    const cx =
-        finish.x * cellSize +
-        cellSize / 2;
-
-    const cy =
-        finish.y * cellSize +
-        cellSize / 2;
-
-    ctx.font =
-        `${cellSize * .55}px Arial`;
-
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    ctx.fillText(
-        "🏁",
-        cx,
-        cy
-    );
-}
-
-
-/* =====================================================
-   DRAW COIN
-===================================================== */
-
-function drawCoin(coin) {
-
-    const cx =
-        coin.x * cellSize +
-        cellSize / 2;
-
-    const cy =
-        coin.y * cellSize +
-        cellSize / 2;
-
-    ctx.beginPath();
-
-    ctx.arc(
-        cx,
-        cy,
-        cellSize * .17,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fillStyle = "#ffd43b";
-
-    ctx.shadowColor = "#ffd43b";
-    ctx.shadowBlur = 10;
-
-    ctx.fill();
-
-    ctx.shadowBlur = 0;
-}
-
-
-/* =====================================================
-   MOVEMENT
-===================================================== */
-
-function movePlayer(direction) {
-
-    if (!gameRunning) return;
-
-    const cell =
-        maze[player.y][player.x];
-
-    let nx = player.x;
-    let ny = player.y;
-
-    if (
-        direction === "up" &&
-        !cell.walls.top
-    ) {
-        ny--;
-    }
-
-    if (
-        direction === "right" &&
-        !cell.walls.right
-    ) {
-        nx++;
-    }
-
-    if (
-        direction === "down" &&
-        !cell.walls.bottom
-    ) {
-        ny++;
-    }
-
-    if (
-        direction === "left" &&
-        !cell.walls.left
-    ) {
-        nx--;
-    }
-
-    if (
-        nx !== player.x ||
-        ny !== player.y
-    ) {
-
-        player.x = nx;
-        player.y = ny;
-
-        steps++;
-
-        document.getElementById(
-            "steps"
-        ).textContent = steps;
-
-        checkCoin();
-
-        drawMaze();
-
-        checkFinish();
-    }
-}
-
-
-/* =====================================================
-   COIN CHECK
-===================================================== */
-
-function checkCoin() {
-
-    const index =
-        coins.findIndex(
-            coin =>
-                coin.x === player.x &&
-                coin.y === player.y
-        );
-
-    if (index !== -1) {
-
-        coins.splice(index, 1);
-
-        coinCount++;
-
-        document.getElementById(
-            "coinCount"
-        ).textContent = coinCount;
-    }
-}
-
-
-/* =====================================================
-   FINISH CHECK
-===================================================== */
-
-function checkFinish() {
-
-    if (
-        player.x === finish.x &&
-        player.y === finish.y
-    ) {
-
-        finishGame();
-    }
 }
 
 
@@ -806,79 +695,94 @@ function checkFinish() {
    FINISH GAME
 ===================================================== */
 
-function finishGame() {
+async function finishGame() {
 
     gameRunning = false;
 
-    clearInterval(timerInterval);
+    const time =
+        stopTimer();
 
-    const elapsed =
-        Math.floor(
-            (Date.now() - startTime) / 1000
-        );
 
-    document.getElementById(
-        "resultName"
-    ).textContent = username;
+    /*
+       Rumus skor.
 
-    document.getElementById(
-        "resultTime"
-    ).textContent =
-        formatTime(elapsed);
+       Skor dasar 1000.
+       Semakin cepat = semakin besar.
+       Semakin sedikit langkah = semakin besar.
+    */
 
-    document.getElementById(
-        "resultSteps"
-    ).textContent =
-        steps;
+    let score =
+        1000
+        - (time * 3)
+        - (moves * 2);
 
-    document.getElementById(
-        "resultCoins"
-    ).textContent =
-        coinCount;
+
+    if (score < 10) {
+        score = 10;
+    }
+
+
+    finalTime.textContent =
+        formatTime(time);
+
+    finalMoves.textContent =
+        moves;
+
+    finalScore.textContent =
+        score;
+
+    finishPlayer.textContent =
+        username;
+
 
     showScreen(finishScreen);
 
-    saveScore(
+
+    await saveScore(
         username,
-        whatsapp,
-        elapsed,
-        steps,
-        coinCount
+        phone,
+        score,
+        time,
+        moves
     );
+
+
+    loadLeaderboard();
 }
 
 
 /* =====================================================
-   SAVE SCORE TO GOOGLE SHEETS
+   SAVE SCORE
 ===================================================== */
 
 async function saveScore(
-    name,
-    wa,
+    username,
+    phone,
+    score,
     time,
-    step,
-    coin
+    moves
 ) {
 
-    const status =
-        document.getElementById(
-            "saveStatus"
-        );
+    saveStatus.textContent =
+        "💾 Menyimpan skor...";
 
-    status.textContent =
-        "⏳ Menyimpan skor...";
+
+    /*
+       Jika API belum dipasang,
+       jangan membuat game error.
+    */
 
     if (
-        API_URL.includes(
-            "MASUKKAN_URL"
-        )
+        !API_URL ||
+        API_URL.includes("MASUKKAN_URL")
     ) {
 
-        status.textContent =
-            "⚠️ URL Google Apps Script belum dipasang.";
+        saveStatus.textContent =
+            "⚠️ API Google Sheets belum dipasang.";
 
         return;
     }
+
 
     try {
 
@@ -889,31 +793,35 @@ async function saveScore(
 
                 body: JSON.stringify({
 
-                    username: name,
+                    action: "saveScore",
 
-                    whatsapp: wa,
+                    username: username,
+
+                    phone: phone,
+
+                    score: score,
 
                     time: time,
 
-                    steps: step,
-
-                    coins: coin
+                    moves: moves
 
                 })
 
             });
 
+
         const result =
             await response.json();
 
+
         if (result.success) {
 
-            status.textContent =
+            saveStatus.textContent =
                 "✅ Skor berhasil disimpan!";
 
         } else {
 
-            status.textContent =
+            saveStatus.textContent =
                 "❌ Gagal menyimpan skor.";
 
         }
@@ -922,46 +830,11 @@ async function saveScore(
 
         console.error(error);
 
-        status.textContent =
+        saveStatus.textContent =
             "❌ Tidak dapat terhubung ke database.";
+
     }
 }
-
-
-/* =====================================================
-   LEADERBOARD
-===================================================== */
-
-leaderboardBtn.addEventListener(
-    "click",
-    () => {
-
-        showScreen(
-            leaderboardScreen
-        );
-
-        loadLeaderboard();
-    }
-);
-
-
-finishLeaderboardBtn.addEventListener(
-    "click",
-    () => {
-
-        showScreen(
-            leaderboardScreen
-        );
-
-        loadLeaderboard();
-    }
-);
-
-
-refreshLeaderboard.addEventListener(
-    "click",
-    loadLeaderboard
-);
 
 
 /* =====================================================
@@ -970,152 +843,218 @@ refreshLeaderboard.addEventListener(
 
 async function loadLeaderboard() {
 
-    const container =
-        document.getElementById(
-            "leaderboardList"
-        );
+    leaderboardList.innerHTML =
+        `<p class="loading">
+            Memuat leaderboard...
+        </p>`;
 
-    container.innerHTML =
-        `<div class="loading">
-            ⏳ Memuat leaderboard...
-        </div>`;
 
     if (
-        API_URL.includes(
-            "MASUKKAN_URL"
-        )
+        !API_URL ||
+        API_URL.includes("MASUKKAN_URL")
     ) {
 
-        container.innerHTML =
-            `<div class="loading">
-                ⚠️ URL Google Apps Script belum dipasang.
-            </div>`;
+        leaderboardList.innerHTML =
+            `<p class="loading">
+                Hubungkan Google Sheets terlebih dahulu.
+            </p>`;
 
         return;
     }
+
 
     try {
 
         const response =
             await fetch(
-                API_URL
+                API_URL + "?action=getLeaderboard"
             );
+
 
         const data =
             await response.json();
 
-        if (!data.success) {
+
+        if (
+            !data.success ||
+            !Array.isArray(data.data)
+        ) {
 
             throw new Error(
-                "Gagal mengambil data"
+                "Data leaderboard tidak valid."
             );
+
         }
 
-        renderLeaderboard(
-            data.players
-        );
+
+        leaderboardList.innerHTML = "";
+
+
+        if (data.data.length === 0) {
+
+            leaderboardList.innerHTML =
+                `<p class="loading">
+                    Belum ada pemain.
+                </p>`;
+
+            return;
+        }
+
+
+        data.data
+            .slice(0, 10)
+            .forEach((player, index) => {
+
+                const item =
+                    document.createElement("div");
+
+                item.className =
+                    "rank-item";
+
+
+                item.innerHTML = `
+
+                    <div class="rank-number">
+                        #${index + 1}
+                    </div>
+
+                    <div class="rank-name">
+                        ${escapeHTML(player.username)}
+                    </div>
+
+                    <div class="rank-score">
+                        ${player.score}
+                    </div>
+
+                `;
+
+
+                leaderboardList.appendChild(item);
+
+            });
+
 
     } catch (error) {
 
         console.error(error);
 
-        container.innerHTML =
-            `<div class="loading">
+        leaderboardList.innerHTML =
+            `<p class="loading">
                 ❌ Gagal memuat leaderboard.
-            </div>`;
+            </p>`;
     }
 }
 
 
 /* =====================================================
-   RENDER LEADERBOARD
-===================================================== */
-
-function renderLeaderboard(players) {
-
-    const container =
-        document.getElementById(
-            "leaderboardList"
-        );
-
-    if (!players.length) {
-
-        container.innerHTML =
-            `<div class="loading">
-                Belum ada pemain.
-            </div>`;
-
-        return;
-    }
-
-    container.innerHTML = "";
-
-    players
-        .slice(0, 50)
-        .forEach((player, index) => {
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-            item.className =
-                "rank-item";
-
-            item.innerHTML = `
-
-                <div class="rank">
-                    #${index + 1}
-                </div>
-
-                <div class="rank-name">
-                    ${escapeHTML(
-                        player.username
-                    )}
-                </div>
-
-                <div class="rank-time">
-                    ${formatTime(
-                        Number(player.time)
-                    )}
-                </div>
-
-                <div class="rank-step">
-                    ${player.steps} STEP
-                </div>
-
-            `;
-
-            container.appendChild(item);
-        });
-}
-
-
-/* =====================================================
-   SECURITY
+   ESCAPE HTML
 ===================================================== */
 
 function escapeHTML(text) {
 
     return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }
 
 
 /* =====================================================
-   BUTTONS
+   REFRESH
 ===================================================== */
 
-document.querySelectorAll(
-    ".control-btn[data-direction]"
-).forEach(button => {
+refreshBtn.addEventListener(
+    "click",
+    loadLeaderboard
+);
 
-    button.addEventListener(
-        "pointerdown",
-        event => {
 
-   
+/* =====================================================
+   PLAY AGAIN
+===================================================== */
+
+document.getElementById(
+    "playAgainBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        startGame();
+
+    }
+);
+
+
+/* =====================================================
+   HOME
+===================================================== */
+
+document.getElementById(
+    "homeBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        showScreen(menuScreen);
+
+        loadLeaderboard();
+
+    }
+);
+
+
+/* =====================================================
+   BACK
+===================================================== */
+
+document.getElementById(
+    "backBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        if (
+            confirm(
+                "Keluar dari permainan?"
+            )
+        ) {
+
+            gameRunning = false;
+
+            stopTimer();
+
+            showScreen(menuScreen);
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   RESIZE
+===================================================== */
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        if (gameRunning) {
+
+            resizeCanvas();
+
+            drawMaze();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INITIAL LOAD
+===================================================== */
+
+loadLeaderboard();
