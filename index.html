@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0,
+          maximum-scale=1.0,user-scalable=no">
+
+    <title>Maze Escape</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- ================= MENU ================= -->
+    <section id="menuScreen" class="screen active">
+
+        <div class="logo">
+            <div class="logo-icon">🌀</div>
+            <h1>MAZE<br><span>ESCAPE</span></h1>
+            <p>Can You Find The Way?</p>
+        </div>
+
+        <div class="form-box">
+
+            <label>USERNAME</label>
+            <input
+                type="text"
+                id="username"
+                placeholder="Masukkan username"
+                maxlength="15"
+                autocomplete="off"
+            >
+
+            <label>NOMOR WHATSAPP</label>
+            <input
+                type="tel"
+                id="whatsapp"
+                placeholder="08xxxxxxxxxx"
+                maxlength="15"
+                autocomplete="off"
+            >
+
+            <button id="startBtn" class="primary-btn">
+                ▶ MULAI BERMAIN
+            </button>
+
+            <button id="leaderboardBtn" class="secondary-btn">
+                🏆 LEADERBOARD
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= GAME ================= -->
+    <section id="gameScreen" class="screen">
+
+        <header class="game-header">
+
+            <button id="backBtn" class="icon-btn">
+                ←
+            </button>
+
+            <div>
+                <small>PLAYER</small>
+                <strong id="playerName">PLAYER</strong>
+            </div>
+
+            <div class="stat">
+                <small>TIME</small>
+                <strong id="timer">00:00</strong>
+            </div>
+
+            <div class="stat">
+                <small>STEP</small>
+                <strong id="steps">0</strong>
+            </div>
+
+        </header>
+
+
+        <div class="game-info">
+
+            <div>
+                🪙 <span id="coinCount">0</span>
+            </div>
+
+            <div>
+                LEVEL <span id="level">1</span>
+            </div>
+
+        </div>
+
+
+        <div id="mazeContainer">
+            <canvas id="mazeCanvas"></canvas>
+        </div>
+
+
+        <!-- CONTROL -->
+        <div class="controls">
+
+            <button class="control-btn empty"></button>
+
+            <button
+                class="control-btn"
+                data-direction="up">
+                ▲
+            </button>
+
+            <button class="control-btn empty"></button>
+
+            <button
+                class="control-btn"
+                data-direction="left">
+                ◀
+            </button>
+
+            <button
+                class="control-btn center">
+                ●
+            </button>
+
+            <button
+                class="control-btn"
+                data-direction="right">
+                ▶
+            </button>
+
+            <button class="control-btn empty"></button>
+
+            <button
+                class="control-btn"
+                data-direction="down">
+                ▼
+            </button>
+
+            <button class="control-btn empty"></button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= FINISH ================= -->
+    <section id="finishScreen" class="screen">
+
+        <div class="result-card">
+
+            <div class="win-icon">
+                🏆
+            </div>
+
+            <h1>YOU ESCAPED!</h1>
+
+            <p class="result-name" id="resultName">
+                PLAYER
+            </p>
+
+            <div class="result-stats">
+
+                <div>
+                    <span>TIME</span>
+                    <strong id="resultTime">
+                        00:00
+                    </strong>
+                </div>
+
+                <div>
+                    <span>STEPS</span>
+                    <strong id="resultSteps">
+                        0
+                    </strong>
+                </div>
+
+                <div>
+                    <span>COINS</span>
+                    <strong id="resultCoins">
+                        0
+                    </strong>
+                </div>
+
+            </div>
+
+            <p id="saveStatus" class="save-status">
+                Menyimpan skor...
+            </p>
+
+            <button
+                id="againBtn"
+                class="primary-btn">
+                🔄 MAIN LAGI
+            </button>
+
+            <button
+                id="finishLeaderboardBtn"
+                class="secondary-btn">
+                🏆 LIHAT LEADERBOARD
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= LEADERBOARD ================= -->
+    <section id="leaderboardScreen" class="screen">
+
+        <div class="leaderboard-header">
+
+            <button
+                id="leaderboardBackBtn"
+                class="icon-btn">
+                ←
+            </button>
+
+            <div>
+                <h1>🏆 LEADERBOARD</h1>
+                <p>TOP PLAYERS</p>
+            </div>
+
+        </div>
+
+        <div id="leaderboardList">
+
+            <div class="loading">
+                Memuat leaderboard...
+            </div>
+
+        </div>
+
+        <button
+            id="refreshLeaderboard"
+            class="secondary-btn">
+            🔄 REFRESH
+        </button>
+
+    </section>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+              </html>
