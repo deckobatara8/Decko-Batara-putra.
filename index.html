@@ -1,405 +1,179 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width,
-        initial-scale=1.0,
-        maximum-scale=1.0,
-        user-scalable=no"
-    >
-
-    <meta
-        name="theme-color"
-        content="#020617"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Maze Rush</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+    <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
-
-    <!-- =================================================
-         MENU
-    ================================================== -->
-
-    <section
-        id="menuScreen"
-        class="screen active"
-    >
+    <!-- ================= MENU ================= -->
+    <section id="menuScreen" class="screen active">
 
         <div class="logo">
-
-            <div class="logo-icon">
-                🧩
-            </div>
-
-            <h1>
-                MAZE RUSH
-            </h1>
-
-            <p>
-                ESCAPE THE LABYRINTH
-            </p>
-
+            <span>🧩</span>
+            <h1>MAZE RUSH</h1>
+            <p>Escape The Labyrinth</p>
         </div>
-
-
-        <!-- LOGIN -->
 
         <div class="card">
 
-            <h2>
-                🎮 Mulai Bermain
-            </h2>
-
-            <p class="card-description">
-                Masukkan data pemain
-            </p>
-
+            <h2>🎮 Mulai Bermain</h2>
 
             <input
-                id="username"
                 type="text"
-                placeholder="Username"
+                id="username"
+                placeholder="Masukkan username"
                 maxlength="20"
                 autocomplete="off"
             >
 
-
             <input
-                id="phone"
                 type="tel"
+                id="phone"
                 placeholder="Nomor WhatsApp"
                 maxlength="15"
                 autocomplete="off"
             >
 
-
-            <button
-                id="startBtn"
-                class="main-button"
-            >
-
+            <button id="startBtn">
                 MULAI GAME 🚀
-
             </button>
 
         </div>
-
-
-        <!-- LEADERBOARD -->
 
         <div class="leaderboard">
 
-            <div class="leaderboard-header">
-
-                <div>
-
-                    <span class="trophy">
-                        🏆
-                    </span>
-
-                    <h2>
-                        Leaderboard
-                    </h2>
-
-                </div>
-
-
-                <button
-                    id="refreshBtn"
-                    class="refresh-button"
-                >
-
-                    ↻
-
-                </button>
-
+            <div class="section-title">
+                <h2>🏆 Leaderboard</h2>
+                <button id="refreshBtn">↻</button>
             </div>
 
-
-            <div
-                id="leaderboardList"
-                class="leaderboard-list"
-            >
-
-                <div class="loading">
-                    Memuat leaderboard...
-                </div>
-
+            <div id="leaderboardList">
+                <p class="loading">Memuat leaderboard...</p>
             </div>
 
         </div>
 
-
     </section>
 
 
-
-    <!-- =================================================
-         GAME
-    ================================================== -->
-
-    <section
-        id="gameScreen"
-        class="screen"
-    >
+    <!-- ================= GAME ================= -->
+    <section id="gameScreen" class="screen">
 
         <div class="game-header">
 
+            <button id="backBtn" class="icon-btn">←</button>
 
-            <button
-                id="backBtn"
-                class="back-button"
-            >
-
-                ←
-
-            </button>
-
-
-            <div class="player-info">
-
-                <small>
-                    PLAYER
-                </small>
-
-                <strong
-                    id="playerName"
-                >
-                    PLAYER
-                </strong>
-
+            <div>
+                <small>PLAYER</small>
+                <strong id="playerName">PLAYER</strong>
             </div>
 
-
-            <div class="game-stats">
-
+            <div class="stats">
                 <div>
-
-                    <small>
-                        TIME
-                    </small>
-
-                    <strong
-                        id="timer"
-                    >
-                        00:00
-                    </strong>
-
+                    <small>TIME</small>
+                    <strong id="timer">00:00</strong>
                 </div>
 
-
                 <div>
-
-                    <small>
-                        MOVES
-                    </small>
-
-                    <strong
-                        id="moves"
-                    >
-                        0
-                    </strong>
-
+                    <small>MOVES</small>
+                    <strong id="moves">0</strong>
                 </div>
-
             </div>
 
         </div>
 
 
-        <!-- MAZE -->
+        <div class="maze-wrapper">
 
-        <div class="maze-container">
-
-            <canvas
-                id="mazeCanvas"
-            ></canvas>
+            <canvas id="mazeCanvas"></canvas>
 
         </div>
 
-
-        <!-- CONTROL -->
 
         <div class="controls">
 
+            <button class="control empty"></button>
 
-            <button
-                class="control empty"
-            ></button>
-
-
-            <button
-                class="control"
-                data-direction="up"
-            >
+            <button class="control" data-direction="up">
                 ▲
             </button>
 
-
-            <button
-                class="control empty"
-            ></button>
+            <button class="control empty"></button>
 
 
-            <button
-                class="control"
-                data-direction="left"
-            >
+            <button class="control" data-direction="left">
                 ◀
             </button>
 
-
-            <button
-                class="control"
-                data-direction="down"
-            >
+            <button class="control" data-direction="down">
                 ▼
             </button>
 
-
-            <button
-                class="control"
-                data-direction="right"
-            >
+            <button class="control" data-direction="right">
                 ▶
             </button>
 
-
         </div>
 
-
         <p class="instruction">
-            Gunakan tombol arah atau WASD
+            Gunakan tombol arah atau keyboard untuk bergerak
         </p>
-
 
     </section>
 
 
-
-    <!-- =================================================
-         FINISH
-    ================================================== -->
-
-    <section
-        id="finishScreen"
-        class="screen"
-    >
+    <!-- ================= FINISH ================= -->
+    <section id="finishScreen" class="screen">
 
         <div class="finish-card">
-
 
             <div class="finish-icon">
                 🏆
             </div>
 
+            <h1>LABIRIN SELESAI!</h1>
 
-            <h1>
-                SELESAI!
-            </h1>
-
-
-            <p
-                id="finishPlayer"
-                class="finish-player"
-            >
+            <p class="finish-player" id="finishPlayer">
                 Player
             </p>
 
-
             <div class="result">
 
-
                 <div>
-
-                    <span>
-                        WAKTU
-                    </span>
-
-                    <strong
-                        id="finalTime"
-                    >
-                        00:00
-                    </strong>
-
+                    <span>WAKTU</span>
+                    <strong id="finalTime">00:00</strong>
                 </div>
 
-
                 <div>
-
-                    <span>
-                        LANGKAH
-                    </span>
-
-                    <strong
-                        id="finalMoves"
-                    >
-                        0
-                    </strong>
-
+                    <span>LANGKAH</span>
+                    <strong id="finalMoves">0</strong>
                 </div>
 
-
                 <div>
-
-                    <span>
-                        SKOR
-                    </span>
-
-                    <strong
-                        id="finalScore"
-                    >
-                        0
-                    </strong>
-
+                    <span>SKOR</span>
+                    <strong id="finalScore">0</strong>
                 </div>
-
 
             </div>
 
-
-            <p
-                id="saveStatus"
-                class="save-status"
-            >
+            <p id="saveStatus" class="save-status">
                 Menyimpan skor...
             </p>
 
-
-            <button
-                id="playAgainBtn"
-                class="main-button"
-            >
-
+            <button id="playAgainBtn">
                 🔄 MAIN LAGI
-
             </button>
 
-
-            <button
-                id="homeBtn"
-                class="secondary-button"
-            >
-
+            <button id="homeBtn" class="secondary-btn">
                 🏠 MENU UTAMA
-
             </button>
-
 
         </div>
 
@@ -409,5 +183,4 @@
     <script src="script.js"></script>
 
 </body>
-
-    </html>
+</html>
