@@ -14,7 +14,7 @@
 ===================================================== */
 
 const API_URL =
-    "MASUKKAN_URL_WEB_APP_DI_SINI";
+    "https://script.google.com/macros/s/AKfycbzVDjDB34HSh4AQ6lgAB2qGD9flPPie6pP_F_9otQaTYFzY0dOU9WoIpOYQQ2qJXrXdKQ/exec";
 
 
 /* =====================================================
