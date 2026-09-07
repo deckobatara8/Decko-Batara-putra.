@@ -114,73 +114,49 @@ function showScreen(screen) {
    START GAME
 ===================================================== */
 
-startBtn.addEventListener("click", () => {
+startBtn.addEventListener("click", function () {
+    const name = usernameInput.value.trim();
+    const wa = whatsappInput.value.trim();
 
-    const name =
-        usernameInput.value.trim();
-
-    const wa =
-        whatsappInput.value.trim();
+    if (name === "") {
+        alert("Masukkan username terlebih dahulu!");
+        usernameInput.focus();
+        return;
+    }
 
     if (name.length < 3) {
-        alert("Username minimal 3 karakter.");
+        alert("Username minimal 3 karakter!");
+        usernameInput.focus();
+        return;
+    }
+
+    if (wa === "") {
+        alert("Masukkan nomor WhatsApp terlebih dahulu!");
+        whatsappInput.focus();
         return;
     }
 
     if (!/^[0-9]+$/.test(wa)) {
-        alert("Nomor WhatsApp hanya boleh angka.");
+        alert("Nomor WhatsApp hanya boleh berisi angka!");
+        whatsappInput.focus();
         return;
     }
 
     if (wa.length < 10) {
-        alert("Nomor WhatsApp tidak valid.");
+        alert("Nomor WhatsApp minimal 10 angka!");
+        whatsappInput.focus();
         return;
     }
 
     username = name;
     whatsapp = wa;
 
-    document.getElementById(
-        "playerName"
-    ).textContent = username;
+    document.getElementById("playerName").textContent = username;
 
     showScreen(gameScreen);
 
     startGame();
 });
-
-
-/* =====================================================
-   START / RESET GAME
-===================================================== */
-
-function startGame() {
-
-    steps = 0;
-    coinCount = 0;
-
-    document.getElementById(
-        "steps"
-    ).textContent = steps;
-
-    document.getElementById(
-        "coinCount"
-    ).textContent = coinCount;
-
-    generateMaze();
-
-    startTime = Date.now();
-
-    gameRunning = true;
-
-    clearInterval(timerInterval);
-
-    timerInterval =
-        setInterval(updateTimer, 100);
-
-    resizeCanvas();
-    drawMaze();
-}
 
 
 /* =====================================================
