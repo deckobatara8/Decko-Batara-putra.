@@ -1,16 +1,8 @@
 /* =====================================================
-   MAZE RUSH
-   GAME + GOOGLE SHEETS DATABASE
-===================================================== */
-
-
-/* =====================================================
    GOOGLE APPS SCRIPT URL
 
-   GANTI DENGAN URL WEB APP KAMU
-
-   HARUS BERAKHIR:
-   /exec
+   Setelah membuat Google Apps Script,
+   masukkan URL Web App di bawah ini.
 ===================================================== */
 
 const API_URL =
@@ -22,351 +14,205 @@ const API_URL =
 ===================================================== */
 
 const menuScreen =
-    document.getElementById(
-        "menuScreen"
-    );
+    document.getElementById("menuScreen");
 
 const gameScreen =
-    document.getElementById(
-        "gameScreen"
-    );
+    document.getElementById("gameScreen");
 
 const finishScreen =
-    document.getElementById(
-        "finishScreen"
-    );
-
+    document.getElementById("finishScreen");
 
 const usernameInput =
-    document.getElementById(
-        "username"
-    );
+    document.getElementById("username");
 
 const phoneInput =
-    document.getElementById(
-        "phone"
-    );
-
+    document.getElementById("phone");
 
 const startBtn =
-    document.getElementById(
-        "startBtn"
-    );
+    document.getElementById("startBtn");
 
 const refreshBtn =
-    document.getElementById(
-        "refreshBtn"
-    );
-
+    document.getElementById("refreshBtn");
 
 const leaderboardList =
-    document.getElementById(
-        "leaderboardList"
-    );
-
+    document.getElementById("leaderboardList");
 
 const canvas =
-    document.getElementById(
-        "mazeCanvas"
-    );
+    document.getElementById("mazeCanvas");
 
 const ctx =
-    canvas.getContext(
-        "2d"
-    );
-
+    canvas.getContext("2d");
 
 const playerName =
-    document.getElementById(
-        "playerName"
-    );
+    document.getElementById("playerName");
 
 const timerElement =
-    document.getElementById(
-        "timer"
-    );
+    document.getElementById("timer");
 
 const movesElement =
-    document.getElementById(
-        "moves"
-    );
-
+    document.getElementById("moves");
 
 const finalTime =
-    document.getElementById(
-        "finalTime"
-    );
+    document.getElementById("finalTime");
 
 const finalMoves =
-    document.getElementById(
-        "finalMoves"
-    );
+    document.getElementById("finalMoves");
 
 const finalScore =
-    document.getElementById(
-        "finalScore"
-    );
+    document.getElementById("finalScore");
 
 const finishPlayer =
-    document.getElementById(
-        "finishPlayer"
-    );
+    document.getElementById("finishPlayer");
 
 const saveStatus =
-    document.getElementById(
-        "saveStatus"
-    );
+    document.getElementById("saveStatus");
 
 
 /* =====================================================
-   PLAYER
+   GAME DATA
 ===================================================== */
 
 let username = "";
-
 let phone = "";
 
-
-/* =====================================================
-   MAZE
-===================================================== */
-
-const SIZE = 21;
-
 let maze = [];
-
 let player = {
-    x: 1,
-    y: 1
+    x: 0,
+    y: 0
 };
 
 let exit = {
-    x: SIZE - 2,
-    y: SIZE - 2
+    x: 0,
+    y: 0
 };
-
-
-/* =====================================================
-   GAME
-===================================================== */
 
 let moves = 0;
 
 let startTime = 0;
-
 let timerInterval = null;
 
 let gameRunning = false;
+
+
+/*
+   Ukuran labirin.
+   21 x 21 cukup sulit tetapi masih nyaman
+   untuk layar HP.
+*/
+
+const SIZE = 21;
 
 
 /* =====================================================
    SCREEN
 ===================================================== */
 
-function showScreen(
-    screen
-) {
+function showScreen(screen) {
 
-    document
-        .querySelectorAll(
-            ".screen"
-        )
-        .forEach(
-            function(el) {
+    document.querySelectorAll(".screen")
+        .forEach(el => {
+            el.classList.remove("active");
+        });
 
-                el.classList.remove(
-                    "active"
-                );
-
-            }
-        );
-
-
-    screen.classList.add(
-        "active"
-    );
-
+    screen.classList.add("active");
 }
-
-
-/* =====================================================
-   API CHECK
-===================================================== */
-
-function apiReady() {
-
-    return (
-        API_URL &&
-        !API_URL.includes(
-            "MASUKKAN_URL"
-        )
-    );
-
-}
-
-
-/* =====================================================
-   START BUTTON
-===================================================== */
-
-startBtn.addEventListener(
-    "click",
-    function() {
-
-        username =
-            usernameInput
-                .value
-                .trim();
-
-
-        phone =
-            phoneInput
-                .value
-                .trim();
-
-
-        /* -----------------------------------------
-           VALIDASI USERNAME
-        ----------------------------------------- */
-
-        if (
-            username.length < 3
-        ) {
-
-            alert(
-                "Username minimal 3 karakter."
-            );
-
-            usernameInput.focus();
-
-            return;
-
-        }
-
-
-        /* -----------------------------------------
-           VALIDASI WHATSAPP
-        ----------------------------------------- */
-
-        const cleanPhone =
-            phone.replace(
-                /[\s-]/g,
-                ""
-            );
-
-
-        if (
-            !/^\+?\d{10,15}$/
-                .test(cleanPhone)
-        ) {
-
-            alert(
-                "Nomor WhatsApp tidak valid."
-            );
-
-            phoneInput.focus();
-
-            return;
-
-        }
-
-
-        phone =
-            cleanPhone;
-
-
-        playerName.textContent =
-            username.toUpperCase();
-
-
-        startGame();
-
-    }
-);
 
 
 /* =====================================================
    START GAME
 ===================================================== */
 
+startBtn.addEventListener("click", () => {
+
+    username =
+        usernameInput.value.trim();
+
+    phone =
+        phoneInput.value.trim();
+
+
+    if (username.length < 3) {
+
+        alert("Username minimal 3 karakter.");
+
+        usernameInput.focus();
+
+        return;
+    }
+
+
+    if (!/^[0-9+ ]{10,15}$/.test(phone)) {
+
+        alert("Masukkan nomor WhatsApp yang valid.");
+
+        phoneInput.focus();
+
+        return;
+    }
+
+
+    playerName.textContent =
+        username.toUpperCase();
+
+
+    startGame();
+});
+
+
+/* =====================================================
+   START
+===================================================== */
+
 function startGame() {
 
-    showScreen(
-        gameScreen
-    );
-
+    showScreen(gameScreen);
 
     moves = 0;
 
-    movesElement.textContent =
-        "0";
+    movesElement.textContent = "0";
 
-
-    timerElement.textContent =
-        "00:00";
-
+    timerElement.textContent = "00:00";
 
     generateMaze();
 
-
     resizeCanvas();
-
 
     drawMaze();
 
-
     startTimer();
 
-
     gameRunning = true;
-
 }
 
 
 /* =====================================================
-   GENERATE MAZE
+   MAZE GENERATOR
+   Recursive Backtracking
 ===================================================== */
 
 function generateMaze() {
 
     maze = [];
 
-
-    /* -----------------------------------------
-       Semua menjadi dinding
-    ----------------------------------------- */
-
-    for (
-        let y = 0;
-        y < SIZE;
-        y++
-    ) {
+    for (let y = 0; y < SIZE; y++) {
 
         maze[y] = [];
 
-
-        for (
-            let x = 0;
-            x < SIZE;
-            x++
-        ) {
+        for (let x = 0; x < SIZE; x++) {
 
             maze[y][x] = 1;
 
         }
-
     }
 
 
-    /* -----------------------------------------
-       Recursive Backtracking
-    ----------------------------------------- */
+    /*
+       Mulai dari (1,1)
+    */
 
     const stack = [];
 
-
     maze[1][1] = 0;
-
 
     stack.push({
         x: 1,
@@ -375,94 +221,53 @@ function generateMaze() {
 
 
     const directions = [
-
-        {
-            x: 0,
-            y: -2
-        },
-
-        {
-            x: 2,
-            y: 0
-        },
-
-        {
-            x: 0,
-            y: 2
-        },
-
-        {
-            x: -2,
-            y: 0
-        }
-
+        { x: 0, y: -2 },
+        { x: 2, y: 0 },
+        { x: 0, y: 2 },
+        { x: -2, y: 0 }
     ];
 
 
-    while (
-        stack.length > 0
-    ) {
+    while (stack.length > 0) {
 
         const current =
-            stack[
-                stack.length - 1
-            ];
-
+            stack[stack.length - 1];
 
         let neighbors = [];
 
 
-        directions.forEach(
-            function(dir) {
+        directions.forEach(dir => {
 
-                const nx =
-                    current.x +
-                    dir.x;
+            const nx =
+                current.x + dir.x;
 
-                const ny =
-                    current.y +
-                    dir.y;
+            const ny =
+                current.y + dir.y;
 
 
-                if (
+            if (
+                nx > 0 &&
+                nx < SIZE - 1 &&
+                ny > 0 &&
+                ny < SIZE - 1 &&
+                maze[ny][nx] === 1
+            ) {
 
-                    nx > 0 &&
-
-                    nx < SIZE - 1 &&
-
-                    ny > 0 &&
-
-                    ny < SIZE - 1 &&
-
-                    maze[ny][nx] === 1
-
-                ) {
-
-                    neighbors.push({
-
-                        x: nx,
-
-                        y: ny,
-
-                        wallX:
-                            current.x +
-                            dir.x / 2,
-
-                        wallY:
-                            current.y +
-                            dir.y / 2
-
-                    });
-
-                }
+                neighbors.push({
+                    x: nx,
+                    y: ny,
+                    wallX:
+                        current.x + dir.x / 2,
+                    wallY:
+                        current.y + dir.y / 2
+                });
 
             }
-        );
+
+        });
 
 
-        if (
-            neighbors.length > 0
-        ) {
+        if (neighbors.length > 0) {
 
             const next =
                 neighbors[
@@ -473,23 +278,14 @@ function generateMaze() {
                 ];
 
 
-            maze[next.y][next.x] =
-                0;
+            maze[next.y][next.x] = 0;
 
-
-            maze[next.wallY][
-                next.wallX
-            ] = 0;
-
+            maze[next.wallY][next.wallX] = 0;
 
             stack.push({
-
                 x: next.x,
-
                 y: next.y
-
             });
-
 
         } else {
 
@@ -500,61 +296,37 @@ function generateMaze() {
     }
 
 
-    /* -----------------------------------------
-       PLAYER
-    ----------------------------------------- */
-
     player = {
-
         x: 1,
-
         y: 1
-
     };
 
-
-    /* -----------------------------------------
-       EXIT
-    ----------------------------------------- */
 
     exit = {
-
         x: SIZE - 2,
-
         y: SIZE - 2
-
     };
 
 
-    maze[
-        exit.y
-    ][
-        exit.x
-    ] = 0;
+    maze[exit.y][exit.x] = 0;
 
 
     /*
-       Pastikan pintu keluar tersambung.
+       Pastikan jalan keluar terbuka.
     */
 
-    maze[
-        SIZE - 2
-    ][
-        SIZE - 3
-    ] = 0;
-
+    maze[SIZE - 2][SIZE - 3] = 0;
 }
 
 
 /* =====================================================
-   RESIZE CANVAS
+   CANVAS
 ===================================================== */
 
 function resizeCanvas() {
 
     const rect =
         canvas.getBoundingClientRect();
-
 
     const size =
         Math.min(
@@ -563,28 +335,18 @@ function resizeCanvas() {
         );
 
 
-    const ratio =
-        window.devicePixelRatio ||
-        1;
+    canvas.width = size * devicePixelRatio;
 
-
-    canvas.width =
-        size * ratio;
-
-
-    canvas.height =
-        size * ratio;
-
+    canvas.height = size * devicePixelRatio;
 
     ctx.setTransform(
-        ratio,
+        devicePixelRatio,
         0,
         0,
-        ratio,
+        devicePixelRatio,
         0,
         0
     );
-
 }
 
 
@@ -594,16 +356,8 @@ function resizeCanvas() {
 
 function drawMaze() {
 
-    const rect =
-        canvas.getBoundingClientRect();
-
-
     const size =
-        Math.min(
-            rect.width,
-            rect.height
-        );
-
+        canvas.getBoundingClientRect().width;
 
     const cell =
         size / SIZE;
@@ -617,13 +371,12 @@ function drawMaze() {
     );
 
 
-    /* -----------------------------------------
-       BACKGROUND
-    ----------------------------------------- */
+    /*
+       Background
+    */
 
     ctx.fillStyle =
         "#020617";
-
 
     ctx.fillRect(
         0,
@@ -633,40 +386,24 @@ function drawMaze() {
     );
 
 
-    /* -----------------------------------------
-       WALL
-    ----------------------------------------- */
+    /*
+       Dinding
+    */
 
-    for (
-        let y = 0;
-        y < SIZE;
-        y++
-    ) {
+    for (let y = 0; y < SIZE; y++) {
 
-        for (
-            let x = 0;
-            x < SIZE;
-            x++
-        ) {
+        for (let x = 0; x < SIZE; x++) {
 
-            if (
-                maze[y][x] === 1
-            ) {
+            if (maze[y][x] === 1) {
 
                 ctx.fillStyle =
                     "#1e3a8a";
 
-
                 ctx.fillRect(
-
                     x * cell,
-
                     y * cell,
-
                     cell + 1,
-
                     cell + 1
-
                 );
 
             }
@@ -676,177 +413,114 @@ function drawMaze() {
     }
 
 
-    /* -----------------------------------------
-       EXIT
-    ----------------------------------------- */
+    /*
+       Exit
+    */
 
     ctx.fillStyle =
         "#22c55e";
 
-
     ctx.beginPath();
 
-
     ctx.arc(
-
-        exit.x * cell +
-            cell / 2,
-
-        exit.y * cell +
-            cell / 2,
-
-        cell * .30,
-
+        exit.x * cell + cell / 2,
+        exit.y * cell + cell / 2,
+        cell * .3,
         0,
-
         Math.PI * 2
-
     );
-
 
     ctx.fill();
 
 
-    /* -----------------------------------------
-       PLAYER
-    ----------------------------------------- */
+    /*
+       Player
+    */
 
     ctx.fillStyle =
         "#38bdf8";
 
-
     ctx.beginPath();
 
-
     ctx.arc(
-
-        player.x * cell +
-            cell / 2,
-
-        player.y * cell +
-            cell / 2,
-
+        player.x * cell + cell / 2,
+        player.y * cell + cell / 2,
         cell * .32,
-
         0,
-
         Math.PI * 2
-
     );
-
 
     ctx.fill();
 
 
-    /* -----------------------------------------
-       PLAYER HIGHLIGHT
-    ----------------------------------------- */
+    /*
+       Player highlight
+    */
 
     ctx.fillStyle =
         "#ffffff";
 
-
     ctx.beginPath();
 
-
     ctx.arc(
-
-        player.x * cell +
-            cell * .40,
-
-        player.y * cell +
-            cell * .40,
-
+        player.x * cell + cell * .4,
+        player.y * cell + cell * .4,
         cell * .08,
-
         0,
-
         Math.PI * 2
-
     );
 
-
     ctx.fill();
-
 }
 
 
 /* =====================================================
-   MOVE
+   MOVE PLAYER
 ===================================================== */
 
-function movePlayer(
-    dx,
-    dy
-) {
+function movePlayer(dx, dy) {
 
-    if (!gameRunning) {
-        return;
-    }
+    if (!gameRunning) return;
 
 
     const nx =
         player.x + dx;
 
-
     const ny =
         player.y + dy;
 
 
-    /* -----------------------------------------
-       BATAS
-    ----------------------------------------- */
+    /*
+       Tidak boleh menembus dinding.
+    */
 
     if (
-
         nx < 0 ||
-
         nx >= SIZE ||
-
         ny < 0 ||
-
         ny >= SIZE
-
-    ) {
-
-        return;
-
-    }
+    ) return;
 
 
-    /* -----------------------------------------
-       DINDING
-    ----------------------------------------- */
+    if (maze[ny][nx] === 1) {
 
-    if (
-        maze[ny][nx] === 1
-    ) {
+        /*
+           Efek getar ringan jika tersedia.
+        */
 
-        if (
-            navigator.vibrate
-        ) {
-
-            navigator.vibrate(
-                15
-            );
-
+        if (navigator.vibrate) {
+            navigator.vibrate(15);
         }
 
         return;
-
     }
 
-
-    /* -----------------------------------------
-       MOVE
-    ----------------------------------------- */
 
     player.x = nx;
 
     player.y = ny;
 
     moves++;
-
 
     movesElement.textContent =
         moves;
@@ -855,22 +529,18 @@ function movePlayer(
     drawMaze();
 
 
-    /* -----------------------------------------
-       FINISH
-    ----------------------------------------- */
+    /*
+       Check finish
+    */
 
     if (
-
         player.x === exit.x &&
-
         player.y === exit.y
-
     ) {
 
         finishGame();
 
     }
-
 }
 
 
@@ -880,77 +550,45 @@ function movePlayer(
 
 document.addEventListener(
     "keydown",
-    function(event) {
+    event => {
 
-        if (!gameRunning) {
-            return;
-        }
+        if (!gameRunning) return;
 
 
-        switch (
-            event.key
-        ) {
+        switch (event.key) {
 
             case "ArrowUp":
-
             case "w":
-
             case "W":
 
-                event.preventDefault();
-
-                movePlayer(
-                    0,
-                    -1
-                );
+                movePlayer(0, -1);
 
                 break;
 
 
             case "ArrowDown":
-
             case "s":
-
             case "S":
 
-                event.preventDefault();
-
-                movePlayer(
-                    0,
-                    1
-                );
+                movePlayer(0, 1);
 
                 break;
 
 
             case "ArrowLeft":
-
             case "a":
-
             case "A":
 
-                event.preventDefault();
-
-                movePlayer(
-                    -1,
-                    0
-                );
+                movePlayer(-1, 0);
 
                 break;
 
 
             case "ArrowRight":
-
             case "d":
-
             case "D":
 
-                event.preventDefault();
-
-                movePlayer(
-                    1,
-                    0
-                );
+                movePlayer(1, 0);
 
                 break;
 
@@ -964,78 +602,34 @@ document.addEventListener(
    MOBILE CONTROL
 ===================================================== */
 
-document
-    .querySelectorAll(
-        ".control[data-direction]"
-    )
-    .forEach(
-        function(button) {
+document.querySelectorAll(
+    ".control[data-direction]"
+).forEach(button => {
 
-            button.addEventListener(
-                "click",
-                function() {
+    button.addEventListener(
+        "click",
+        () => {
 
-                    const direction =
-                        button.dataset
-                            .direction;
+            const direction =
+                button.dataset.direction;
 
 
-                    if (
-                        direction ===
-                        "up"
-                    ) {
+            if (direction === "up")
+                movePlayer(0, -1);
 
-                        movePlayer(
-                            0,
-                            -1
-                        );
+            if (direction === "down")
+                movePlayer(0, 1);
 
-                    }
+            if (direction === "left")
+                movePlayer(-1, 0);
 
-
-                    if (
-                        direction ===
-                        "down"
-                    ) {
-
-                        movePlayer(
-                            0,
-                            1
-                        );
-
-                    }
-
-
-                    if (
-                        direction ===
-                        "left"
-                    ) {
-
-                        movePlayer(
-                            -1,
-                            0
-                        );
-
-                    }
-
-
-                    if (
-                        direction ===
-                        "right"
-                    ) {
-
-                        movePlayer(
-                            1,
-                            0
-                        );
-
-                    }
-
-                }
-            );
+            if (direction === "right")
+                movePlayer(1, 0);
 
         }
     );
+
+});
 
 
 /* =====================================================
@@ -1044,177 +638,105 @@ document
 
 function startTimer() {
 
-    clearInterval(
-        timerInterval
-    );
+    clearInterval(timerInterval);
 
-
-    startTime =
-        Date.now();
+    startTime = Date.now();
 
 
     timerInterval =
-        setInterval(
-            function() {
+        setInterval(() => {
 
-                const elapsed =
-                    Math.floor(
-
-                        (
-                            Date.now() -
-                            startTime
-                        ) / 1000
-
-                    );
+            const elapsed =
+                Math.floor(
+                    (Date.now() - startTime)
+                    / 1000
+                );
 
 
-                timerElement.textContent =
-                    formatTime(
-                        elapsed
-                    );
+            timerElement.textContent =
+                formatTime(elapsed);
 
-            },
-            1000
-        );
-
+        }, 1000);
 }
 
-
-/* =====================================================
-   STOP TIMER
-===================================================== */
 
 function stopTimer() {
 
-    clearInterval(
-        timerInterval
-    );
-
+    clearInterval(timerInterval);
 
     const elapsed =
         Math.floor(
-
-            (
-                Date.now() -
-                startTime
-            ) / 1000
-
+            (Date.now() - startTime)
+            / 1000
         );
-
 
     return elapsed;
+}
 
+
+function formatTime(seconds) {
+
+    const min =
+        Math.floor(seconds / 60)
+            .toString()
+            .padStart(2, "0");
+
+    const sec =
+        (seconds % 60)
+            .toString()
+            .padStart(2, "0");
+
+
+    return `${min}:${sec}`;
 }
 
 
 /* =====================================================
-   FORMAT TIME
-===================================================== */
-
-function formatTime(
-    seconds
-) {
-
-    const minutes =
-        Math.floor(
-            seconds / 60
-        )
-        .toString()
-        .padStart(
-            2,
-            "0"
-        );
-
-
-    const secs =
-        (
-            seconds % 60
-        )
-        .toString()
-        .padStart(
-            2,
-            "0"
-        );
-
-
-    return (
-        minutes +
-        ":" +
-        secs
-    );
-
-}
-
-
-/* =====================================================
-   FINISH
+   FINISH GAME
 ===================================================== */
 
 async function finishGame() {
 
     gameRunning = false;
 
-
     const time =
         stopTimer();
 
 
-    /* -----------------------------------------
-       SCORE
-    ----------------------------------------- */
+    /*
+       Rumus skor.
+
+       Skor dasar 1000.
+       Semakin cepat = semakin besar.
+       Semakin sedikit langkah = semakin besar.
+    */
 
     let score =
-
         1000
-
-        - (
-            time * 3
-        )
-
-        - (
-            moves * 2
-        );
+        - (time * 3)
+        - (moves * 2);
 
 
-    if (
-        score < 10
-    ) {
-
+    if (score < 10) {
         score = 10;
-
     }
 
 
-    /* -----------------------------------------
-       DISPLAY
-    ----------------------------------------- */
-
     finalTime.textContent =
-        formatTime(
-            time
-        );
-
+        formatTime(time);
 
     finalMoves.textContent =
         moves;
 
-
     finalScore.textContent =
         score;
-
 
     finishPlayer.textContent =
         username;
 
 
-    showScreen(
-        finishScreen
-    );
+    showScreen(finishScreen);
 
-
-    /* -----------------------------------------
-       SAVE
-    ----------------------------------------- */
 
     await saveScore(
         username,
@@ -1225,12 +747,7 @@ async function finishGame() {
     );
 
 
-    /* -----------------------------------------
-       UPDATE LEADERBOARD
-    ----------------------------------------- */
-
     loadLeaderboard();
-
 }
 
 
@@ -1250,101 +767,294 @@ async function saveScore(
         "💾 Menyimpan skor...";
 
 
-    if (!apiReady()) {
+    /*
+       Jika API belum dipasang,
+       jangan membuat game error.
+    */
+
+    if (
+        !API_URL ||
+        API_URL.includes("MASUKKAN_URL")
+    ) {
 
         saveStatus.textContent =
-            "⚠️ API belum dipasang.";
+            "⚠️ API Google Sheets belum dipasang.";
 
         return;
-
     }
 
 
     try {
 
-        const data = {
+        const response =
+            await fetch(API_URL, {
 
-            action:
-                "saveScore",
+                method: "POST",
 
-            username:
-                username,
+                body: JSON.stringify({
 
-            phone:
-                phone,
+                    action: "saveScore",
 
-            score:
-                score,
+                    username: username,
 
-            time:
-                time,
+                    phone: phone,
 
-            moves:
-                moves
+                    score: score,
 
-        };
+                    time: time,
 
+                    moves: moves
 
-        /*
-           text/plain digunakan agar
-           browser tidak melakukan
-           preflight CORS.
-        */
+                })
 
-        await fetch(
-            API_URL,
-            {
-
-                method:
-                    "POST",
-
-                mode:
-                    "no-cors",
-
-                headers: {
-
-                    "Content-Type":
-                        "text/plain;charset=utf-8"
-
-                },
-
-                body:
-                    JSON.stringify(
-                        data
-                    )
-
-            }
-        );
+            });
 
 
-        /*
-           Mode no-cors membuat browser
-           tidak bisa membaca response.
+        const result =
+            await response.json();
 
-           Tetapi request tetap dikirim
-           ke Google Apps Script.
-        */
 
-        saveStatus.textContent =
-            "✅ Skor berhasil dikirim!";
+        if (result.success) {
 
+            saveStatus.textContent =
+                "✅ Skor berhasil disimpan!";
+
+        } else {
+
+            saveStatus.textContent =
+                "❌ Gagal menyimpan skor.";
+
+        }
 
     } catch (error) {
 
-        console.error(
-            "SAVE ERROR:",
-            error
-        );
-
+        console.error(error);
 
         saveStatus.textContent =
-            "⚠️ Skor mungkin belum tersimpan.";
+            "❌ Tidak dapat terhubung ke database.";
 
     }
-
 }
 
 
 /* =====================================================
-   LEADERBOARD JSONP
-==============================
+   LOAD LEADERBOARD
+===================================================== */
+
+async function loadLeaderboard() {
+
+    leaderboardList.innerHTML =
+        `<p class="loading">
+            Memuat leaderboard...
+        </p>`;
+
+
+    if (
+        !API_URL ||
+        API_URL.includes("MASUKKAN_URL")
+    ) {
+
+        leaderboardList.innerHTML =
+            `<p class="loading">
+                Hubungkan Google Sheets terlebih dahulu.
+            </p>`;
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL + "?action=getLeaderboard"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !data.success ||
+            !Array.isArray(data.data)
+        ) {
+
+            throw new Error(
+                "Data leaderboard tidak valid."
+            );
+
+        }
+
+
+        leaderboardList.innerHTML = "";
+
+
+        if (data.data.length === 0) {
+
+            leaderboardList.innerHTML =
+                `<p class="loading">
+                    Belum ada pemain.
+                </p>`;
+
+            return;
+        }
+
+
+        data.data
+            .slice(0, 10)
+            .forEach((player, index) => {
+
+                const item =
+                    document.createElement("div");
+
+                item.className =
+                    "rank-item";
+
+
+                item.innerHTML = `
+
+                    <div class="rank-number">
+                        #${index + 1}
+                    </div>
+
+                    <div class="rank-name">
+                        ${escapeHTML(player.username)}
+                    </div>
+
+                    <div class="rank-score">
+                        ${player.score}
+                    </div>
+
+                `;
+
+
+                leaderboardList.appendChild(item);
+
+            });
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        leaderboardList.innerHTML =
+            `<p class="loading">
+                ❌ Gagal memuat leaderboard.
+            </p>`;
+    }
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+/* =====================================================
+   REFRESH
+===================================================== */
+
+refreshBtn.addEventListener(
+    "click",
+    loadLeaderboard
+);
+
+
+/* =====================================================
+   PLAY AGAIN
+===================================================== */
+
+document.getElementById(
+    "playAgainBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        startGame();
+
+    }
+);
+
+
+/* =====================================================
+   HOME
+===================================================== */
+
+document.getElementById(
+    "homeBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        showScreen(menuScreen);
+
+        loadLeaderboard();
+
+    }
+);
+
+
+/* =====================================================
+   BACK
+===================================================== */
+
+document.getElementById(
+    "backBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        if (
+            confirm(
+                "Keluar dari permainan?"
+            )
+        ) {
+
+            gameRunning = false;
+
+            stopTimer();
+
+            showScreen(menuScreen);
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   RESIZE
+===================================================== */
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        if (gameRunning) {
+
+            resizeCanvas();
+
+            drawMaze();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INITIAL LOAD
+===================================================== */
+
+loadLeaderboard();
