@@ -6,7 +6,7 @@
 ===================================================== */
 
 const API_URL =
-    "MASUKKAN_URL_GOOGLE_APPS_SCRIPT_DI_SINI";
+    "https://script.google.com/macros/s/AKfycbwvFwlj9Iec7gcW7c3Fv5meUQ-7n4a_9QwvB1h698fJQTrdBC3cnJh6sni0YZoyUbTr/exec";
 
 
 /* =====================================================
