@@ -1,935 +1,510 @@
-@import url(
-    'https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap'
-);
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
 
 
-/* =====================================================
-   RESET
-===================================================== */
+/* =========================
+   GLOBAL
+========================= */
 
 * {
-
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-
-    box-sizing: border-box;
-
-    -webkit-tap-highlight-color:
-        transparent;
-
+    -webkit-tap-highlight-color: transparent;
 }
 
-
-html,
 body {
-
-    width: 100%;
-    min-height: 100%;
-
-}
-
-
-body {
-
     min-height: 100vh;
-
     background:
-
-        radial-gradient(
-            circle at top,
-            #172554 0%,
-            #020617 55%
-        );
-
+        radial-gradient(circle at top, #172554, #020617 55%);
     color: white;
-
-    font-family:
-        'Poppins',
-        sans-serif;
-
+    font-family: 'Poppins', sans-serif;
     overflow-x: hidden;
-
 }
-
 
 button,
 input {
-
     font-family: inherit;
-
 }
-
 
 button {
-
     border: none;
-
     cursor: pointer;
-
-    user-select: none;
-
 }
 
 
-/* =====================================================
+/* =========================
    SCREEN
-===================================================== */
+========================= */
 
 .screen {
-
     display: none;
-
-    width: 100%;
-
     min-height: 100vh;
-
-    padding:
-        24px 16px;
-
+    width: 100%;
+    padding: 24px 16px;
 }
-
 
 .screen.active {
-
     display: flex;
-
     flex-direction: column;
-
 }
 
 
-/* =====================================================
+/* =========================
    MENU
-===================================================== */
+========================= */
 
 #menuScreen {
-
-    width: 100%;
-
-    max-width: 520px;
-
-    margin: auto;
-
     align-items: center;
-
+    max-width: 520px;
+    margin: auto;
 }
 
 
-/* =====================================================
-   LOGO
-===================================================== */
+/* LOGO */
 
 .logo {
-
     text-align: center;
-
-    margin:
-        20px 0 28px;
-
+    margin: 20px 0 25px;
 }
 
-
-.logo-icon {
-
+.logo span {
+    display: block;
     font-size: 58px;
-
-    margin-bottom: 8px;
-
+    margin-bottom: 5px;
 }
-
 
 .logo h1 {
-
-    font-family:
-        'Orbitron',
-        sans-serif;
-
-    font-size: 31px;
-
+    font-family: 'Orbitron', sans-serif;
+    font-size: 30px;
     letter-spacing: 3px;
-
 }
-
 
 .logo p {
-
-    color:
-        #64748b;
-
-    font-size: 10px;
-
+    color: #94a3b8;
+    font-size: 12px;
     letter-spacing: 3px;
-
-    margin-top: 6px;
-
+    margin-top: 5px;
 }
 
 
-/* =====================================================
-   CARD
-===================================================== */
+/* CARD */
 
 .card {
-
     width: 100%;
-
-    padding: 23px;
-
-    background:
-        rgba(15, 23, 42, .92);
-
-    border:
-        1px solid
-        rgba(96, 165, 250, .25);
-
+    background: rgba(15, 23, 42, .9);
+    border: 1px solid rgba(96, 165, 250, .25);
     border-radius: 22px;
-
-    box-shadow:
-        0 20px 60px
-        rgba(0, 0, 0, .35);
-
+    padding: 22px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.35);
 }
-
 
 .card h2 {
-
     font-size: 19px;
-
+    margin-bottom: 18px;
 }
 
 
-.card-description {
-
-    color:
-        #64748b;
-
-    font-size: 11px;
-
-    margin:
-        4px 0 17px;
-
-}
-
-
-/* =====================================================
-   INPUT
-===================================================== */
+/* INPUT */
 
 input {
-
     width: 100%;
-
     height: 54px;
-
-    padding:
-        0 16px;
-
     margin-bottom: 12px;
+    padding: 0 16px;
 
-    background:
-        #020617;
-
+    background: #020617;
     color: white;
 
-    border:
-        1px solid
-        #334155;
-
+    border: 1px solid #334155;
     border-radius: 13px;
 
     outline: none;
-
     font-size: 14px;
-
-    transition:
-        .2s;
-
 }
-
-
-input::placeholder {
-
-    color:
-        #64748b;
-
-}
-
 
 input:focus {
-
-    border-color:
-        #38bdf8;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(56, 189, 248, .1);
-
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56,189,248,.1);
 }
 
 
-/* =====================================================
-   BUTTON
-===================================================== */
+/* BUTTON */
 
-.main-button {
-
+#startBtn {
     width: 100%;
-
     height: 55px;
 
-    margin-top: 4px;
+    margin-top: 5px;
 
     border-radius: 14px;
 
-    background:
-        linear-gradient(
-            135deg,
-            #06b6d4,
-            #2563eb
-        );
+    background: linear-gradient(
+        135deg,
+        #06b6d4,
+        #2563eb
+    );
 
     color: white;
 
-    font-size: 15px;
-
     font-weight: 700;
+    font-size: 15px;
 
     letter-spacing: .5px;
 
     box-shadow:
-        0 8px 25px
-        rgba(37, 99, 235, .3);
+        0 8px 25px rgba(37,99,235,.3);
 
-    transition:
-        transform .15s;
+    transition: .2s;
+}
 
+#startBtn:active {
+    transform: scale(.97);
 }
 
 
-.main-button:active {
-
-    transform:
-        scale(.97);
-
-}
-
-
-/* =====================================================
+/* =========================
    LEADERBOARD
-===================================================== */
+========================= */
 
 .leaderboard {
-
     width: 100%;
-
-    margin-top: 27px;
-
+    margin-top: 25px;
 }
 
-
-.leaderboard-header {
-
+.section-title {
     display: flex;
-
-    justify-content:
-        space-between;
-
     align-items: center;
-
-    margin-bottom: 14px;
-
+    justify-content: space-between;
+    margin-bottom: 12px;
 }
 
-
-.leaderboard-header > div {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 9px;
-
+.section-title h2 {
+    font-size: 18px;
 }
 
-
-.trophy {
-
-    font-size: 29px;
-
-}
-
-
-.leaderboard-header h2 {
-
-    font-size: 21px;
-
-}
-
-
-.refresh-button {
-
-    width: 43px;
-
-    height: 43px;
-
-    border-radius: 12px;
-
-    background:
-        #1e293b;
-
+#refreshBtn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #1e293b;
     color: white;
-
-    font-size: 27px;
-
+    font-size: 22px;
 }
 
-
-.leaderboard-list {
-
+#leaderboardList {
     display: flex;
-
     flex-direction: column;
-
     gap: 8px;
-
 }
-
 
 .rank-item {
-
     display: grid;
-
-    grid-template-columns:
-        45px 1fr auto;
-
+    grid-template-columns: 40px 1fr auto;
     align-items: center;
 
-    min-height: 60px;
+    padding: 12px;
 
-    padding:
-        9px 14px;
+    background: rgba(15,23,42,.8);
 
-    background:
-        rgba(15, 23, 42, .85);
-
-    border:
-        1px solid
-        #1e293b;
-
-    border-radius: 14px;
-
+    border: 1px solid #1e293b;
+    border-radius: 13px;
 }
-
 
 .rank-number {
-
-    font-family:
-        'Orbitron',
-        sans-serif;
-
+    font-family: 'Orbitron';
     font-weight: 700;
-
-    font-size: 13px;
-
 }
-
 
 .rank-name {
-
     font-weight: 600;
-
-    font-size: 13px;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-    white-space: nowrap;
-
 }
-
 
 .rank-score {
-
-    font-family:
-        'Orbitron',
-        sans-serif;
-
-    color:
-        #38bdf8;
-
+    font-family: 'Orbitron';
     font-size: 12px;
-
-    font-weight: 700;
-
+    color: #38bdf8;
 }
-
 
 .loading {
-
     text-align: center;
-
-    color:
-        #64748b;
-
-    padding:
-        20px 5px;
-
-    font-size: 12px;
-
+    color: #64748b;
+    padding: 20px;
 }
 
 
-/* =====================================================
+/* =========================
    GAME
-===================================================== */
+========================= */
 
 #gameScreen {
-
+    padding: 12px;
     max-width: 600px;
-
     margin: auto;
-
-    padding:
-        12px;
-
 }
-
 
 .game-header {
-
     display: flex;
-
     align-items: center;
-
     gap: 10px;
-
-    padding:
-        5px 2px 14px;
-
+    padding: 8px 3px 15px;
 }
 
-
-.back-button {
-
+.icon-btn {
     width: 42px;
-
     height: 42px;
-
     border-radius: 12px;
 
-    background:
-        #1e293b;
-
+    background: #1e293b;
     color: white;
 
-    font-size: 23px;
-
+    font-size: 22px;
 }
 
-
-.player-info {
-
-    min-width: 0;
-
-}
-
-
-.player-info small,
-.game-stats small {
-
+.game-header small {
     display: block;
-
-    color:
-        #64748b;
-
+    color: #64748b;
     font-size: 8px;
-
     letter-spacing: 1px;
-
 }
 
-
-.player-info strong {
-
-    display: block;
-
-    max-width: 130px;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-    white-space: nowrap;
-
+.game-header strong {
     font-size: 13px;
-
 }
 
-
-.game-stats {
-
+.stats {
     margin-left: auto;
-
     display: flex;
-
-    gap: 15px;
-
+    gap: 14px;
 }
 
-
-.game-stats > div {
-
+.stats > div {
     text-align: right;
-
 }
 
 
-.game-stats strong {
-
-    font-family:
-        'Orbitron',
-        sans-serif;
-
-    font-size: 12px;
-
-}
-
-
-/* =====================================================
+/* =========================
    MAZE
-===================================================== */
+========================= */
 
-.maze-container {
-
+.maze-wrapper {
     width: 100%;
-
     aspect-ratio: 1 / 1;
 
-    padding: 7px;
+    padding: 8px;
 
-    background:
-        #020617;
+    background: #020617;
 
-    border:
-        2px solid
-        #1e40af;
-
-    border-radius: 19px;
+    border: 2px solid #1e40af;
+    border-radius: 18px;
 
     box-shadow:
-        0 0 35px
-        rgba(37, 99, 235, .16);
-
+        0 0 30px rgba(37,99,235,.15);
 }
 
-
 #mazeCanvas {
+    width: 100%;
+    height: 100%;
 
     display: block;
 
-    width: 100%;
-
-    height: 100%;
-
-    border-radius: 12px;
+    border-radius: 11px;
 
     touch-action: none;
-
 }
 
 
-/* =====================================================
+/* =========================
    CONTROLS
-===================================================== */
+========================= */
 
 .controls {
-
     width: 220px;
 
-    margin:
-        18px auto 9px;
+    margin: 18px auto 8px;
 
     display: grid;
-
-    grid-template-columns:
-        repeat(3, 65px);
+    grid-template-columns: repeat(3, 65px);
 
     gap: 7px;
 
     justify-content: center;
-
 }
 
-
 .control {
-
     width: 65px;
+    height: 58px;
 
-    height: 57px;
-
-    border-radius: 14px;
-
-    background:
-        #1e293b;
+    background: #1e293b;
 
     color: white;
 
-    font-size: 22px;
+    border-radius: 14px;
+
+    font-size: 23px;
 
     box-shadow:
         0 5px 0 #0f172a;
 
-    touch-action:
-        manipulation;
-
-    transition:
-        transform .08s;
-
+    touch-action: manipulation;
 }
-
 
 .control:active {
-
-    transform:
-        translateY(4px);
-
-    box-shadow:
-        none;
-
+    transform: translateY(4px);
+    box-shadow: none;
 }
-
 
 .control.empty {
-
-    visibility:
-        hidden;
-
+    visibility: hidden;
 }
-
 
 .instruction {
-
     text-align: center;
-
-    color:
-        #64748b;
-
+    color: #64748b;
     font-size: 10px;
-
 }
 
 
-/* =====================================================
+/* =========================
    FINISH
-===================================================== */
+========================= */
 
 #finishScreen {
-
+    justify-content: center;
+    align-items: center;
     max-width: 520px;
-
     margin: auto;
-
-    justify-content:
-        center;
-
-    align-items:
-        center;
-
 }
 
-
 .finish-card {
-
     width: 100%;
-
-    padding:
-        30px 20px;
 
     text-align: center;
 
-    background:
-        rgba(15, 23, 42, .95);
+    background: rgba(15,23,42,.95);
 
-    border:
-        1px solid
-        rgba(56, 189, 248, .25);
+    border: 1px solid rgba(56,189,248,.25);
 
     border-radius: 25px;
 
+    padding: 30px 20px;
+
     box-shadow:
-        0 20px 70px
-        rgba(0, 0, 0, .5);
-
+        0 20px 70px rgba(0,0,0,.5);
 }
-
 
 .finish-icon {
-
     font-size: 65px;
-
-    margin-bottom: 8px;
-
+    margin-bottom: 10px;
 }
-
 
 .finish-card h1 {
-
-    font-family:
-        'Orbitron',
-        sans-serif;
-
-    font-size: 23px;
-
+    font-family: 'Orbitron';
+    font-size: 22px;
 }
-
 
 .finish-player {
-
-    color:
-        #94a3b8;
-
-    font-size: 13px;
-
+    color: #94a3b8;
     margin-top: 5px;
-
 }
 
-
 .result {
-
     display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
 
     gap: 8px;
 
-    margin:
-        25px 0;
-
+    margin: 25px 0;
 }
 
-
 .result div {
-
-    padding:
-        15px 5px;
-
-    background:
-        #020617;
+    background: #020617;
 
     border-radius: 13px;
 
+    padding: 15px 5px;
 }
 
-
 .result span {
-
     display: block;
-
-    color:
-        #64748b;
 
     font-size: 8px;
 
-    letter-spacing: 1px;
+    color: #64748b;
 
+    letter-spacing: 1px;
 }
 
-
 .result strong {
-
     display: block;
 
     margin-top: 5px;
 
-    color:
-        #38bdf8;
-
-    font-family:
-        'Orbitron',
-        sans-serif;
+    font-family: 'Orbitron';
 
     font-size: 14px;
 
+    color: #38bdf8;
 }
-
 
 .save-status {
-
-    color:
-        #94a3b8;
-
     font-size: 11px;
-
-    margin-bottom: 14px;
-
+    color: #94a3b8;
+    margin-bottom: 15px;
 }
 
-
-.secondary-button {
-
+#playAgainBtn,
+.secondary-btn {
     width: 100%;
-
     height: 52px;
-
-    margin-top: 10px;
 
     border-radius: 13px;
 
-    background:
-        #1e293b;
+    font-weight: 700;
+}
+
+#playAgainBtn {
+    background: linear-gradient(
+        135deg,
+        #06b6d4,
+        #2563eb
+    );
 
     color: white;
+}
 
-    font-weight: 700;
+.secondary-btn {
+    margin-top: 10px;
 
+    background: #1e293b;
+
+    color: white;
 }
 
 
-/* =====================================================
-   SMALL SCREEN
-===================================================== */
+/* =========================
+   RESPONSIVE
+========================= */
 
-@media (
-    max-height: 700px
-) {
+@media (max-height: 700px) {
 
     .logo {
-
-        margin:
-            4px 0 13px;
-
+        margin: 5px 0 15px;
     }
 
-
-    .logo-icon {
-
+    .logo span {
         font-size: 40px;
-
     }
-
 
     .logo h1 {
-
         font-size: 25px;
-
     }
-
 
     .card {
-
         padding: 17px;
-
     }
-
 
     .controls {
-
-        margin-top:
-            10px;
-
+        margin-top: 10px;
     }
 
-}
+    }
