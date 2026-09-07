@@ -1,0 +1,404 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #070b16;
+    color: white;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.app {
+    width: 100%;
+    min-height: 100vh;
+    background:
+        radial-gradient(
+            circle at top,
+            #182554 0%,
+            #080d1d 45%,
+            #03050c 100%
+        );
+}
+
+.screen {
+    display: none;
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.screen.active {
+    display: flex;
+}
+
+
+/* ================= MENU ================= */
+
+#menuScreen {
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.logo-icon {
+    font-size: 65px;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 15px #00eaff);
+}
+
+.logo h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 42px;
+    line-height: .95;
+    letter-spacing: 3px;
+}
+
+.logo h1 span {
+    color: #00eaff;
+}
+
+.logo p {
+    margin-top: 12px;
+    color: #8d9ab7;
+    font-size: 12px;
+    letter-spacing: 3px;
+}
+
+.form-box {
+    width: min(100%, 390px);
+    background: rgba(20, 28, 55, .9);
+    border: 1px solid rgba(0, 234, 255, .2);
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.4);
+}
+
+.form-box label {
+    display: block;
+    font-family: 'Orbitron';
+    font-size: 11px;
+    color: #7d8ba9;
+    margin: 10px 0 7px;
+    letter-spacing: 1px;
+}
+
+.form-box input {
+    width: 100%;
+    height: 52px;
+    border: 1px solid #293657;
+    border-radius: 13px;
+    background: #0c1225;
+    color: white;
+    padding: 0 15px;
+    outline: none;
+    font-size: 14px;
+}
+
+.form-box input:focus {
+    border-color: #00eaff;
+    box-shadow: 0 0 15px rgba(0,234,255,.15);
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
+.primary-btn,
+.secondary-btn {
+    width: 100%;
+    height: 54px;
+    border-radius: 14px;
+    margin-top: 15px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.primary-btn {
+    background: linear-gradient(
+        135deg,
+        #00eaff,
+        #0077ff
+    );
+    color: white;
+    box-shadow: 0 8px 25px rgba(0,150,255,.25);
+}
+
+.secondary-btn {
+    background: #151e39;
+    border: 1px solid #2b3b63;
+    color: #b9c7e7;
+}
+
+
+/* ================= GAME ================= */
+
+#gameScreen {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+
+.game-header {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 5px;
+}
+
+.game-header small,
+.stat small {
+    display: block;
+    color: #71809f;
+    font-size: 8px;
+    letter-spacing: 1px;
+}
+
+.game-header strong,
+.stat strong {
+    font-family: 'Orbitron';
+    font-size: 12px;
+}
+
+.stat {
+    margin-left: auto;
+    text-align: right;
+}
+
+.icon-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #151e39;
+    color: white;
+    font-size: 20px;
+}
+
+.game-info {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px 10px;
+    font-family: 'Orbitron';
+    font-size: 11px;
+    color: #00eaff;
+}
+
+#mazeContainer {
+    width: min(94vw, 600px);
+    aspect-ratio: 1;
+    position: relative;
+}
+
+#mazeCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 18px;
+    background: #080d1d;
+    box-shadow:
+        0 0 0 1px #263454,
+        0 15px 40px rgba(0,0,0,.45);
+}
+
+
+/* ================= CONTROLS ================= */
+
+.controls {
+    width: min(85vw, 320px);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.control-btn {
+    height: 54px;
+    border-radius: 14px;
+    background: #151e39;
+    border: 1px solid #2c3b60;
+    color: white;
+    font-size: 21px;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,.2);
+}
+
+.control-btn:active {
+    transform: scale(.92);
+    background: #1e315a;
+}
+
+.control-btn.center {
+    color: #00eaff;
+    font-size: 14px;
+}
+
+.control-btn.empty {
+    visibility: hidden;
+}
+
+
+/* ================= FINISH ================= */
+
+#finishScreen {
+    justify-content: center;
+    align-items: center;
+}
+
+.result-card {
+    width: min(100%, 400px);
+    text-align: center;
+    background: rgba(17,25,49,.95);
+    border: 1px solid rgba(0,234,255,.2);
+    border-radius: 25px;
+    padding: 30px 22px;
+}
+
+.win-icon {
+    font-size: 65px;
+    margin-bottom: 10px;
+}
+
+.result-card h1 {
+    font-family: 'Orbitron';
+    font-size: 25px;
+}
+
+.result-name {
+    color: #00eaff;
+    margin-top: 8px;
+}
+
+.result-stats {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 8px;
+    margin: 25px 0;
+}
+
+.result-stats div {
+    background: #0c1328;
+    border-radius: 14px;
+    padding: 13px 5px;
+}
+
+.result-stats span {
+    display: block;
+    color: #687797;
+    font-size: 8px;
+}
+
+.result-stats strong {
+    display: block;
+    font-family: 'Orbitron';
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.save-status {
+    font-size: 11px;
+    color: #8996b2;
+}
+
+
+/* ================= LEADERBOARD ================= */
+
+#leaderboardScreen {
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.leaderboard-header {
+    width: min(100%, 600px);
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.leaderboard-header h1 {
+    font-family: 'Orbitron';
+    font-size: 21px;
+}
+
+.leaderboard-header p {
+    color: #6d7c9b;
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+#leaderboardList {
+    width: min(100%, 600px);
+}
+
+.rank-item {
+    display: grid;
+    grid-template-columns: 45px 1fr 80px 75px;
+    align-items: center;
+    gap: 8px;
+    padding: 14px;
+    margin-bottom: 8px;
+    border-radius: 15px;
+    background: #111a33;
+    border: 1px solid #202e50;
+}
+
+.rank {
+    font-family: 'Orbitron';
+    font-size: 14px;
+    text-align: center;
+}
+
+.rank-name {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rank-time,
+.rank-step {
+    text-align: right;
+    font-family: 'Orbitron';
+    font-size: 10px;
+    color: #00eaff;
+}
+
+.loading {
+    text-align: center;
+    color: #7584a3;
+    padding: 40px;
+}
+
+
+/* ================= DESKTOP ================= */
+
+@media (min-width: 700px) {
+
+    .logo h1 {
+        font-size: 52px;
+    }
+
+    #gameScreen {
+        padding-top: 15px;
+    }
+
+    .controls {
+        width: 300px;
+    }
+}
