@@ -6,7 +6,7 @@
 ===================================================== */
 
 const API_URL =
-    "https://script.google.com/macros/s/AKfycbxM4khBKvnfcBL5OnAkF1Rf9jmZwGmIEtAcOCNtI0FEPMKreTY82_PPOvW4_d6SFXyx/execl";
+    "https://script.google.com/macros/s/AKfycbxM4khBKvnfcBL5OnAkF1Rf9jmZwGmIEtAcOCNtI0FEPMKreTY82_PPOvW4_d6SFXyx/exec";
 
 
 /* =====================================================
